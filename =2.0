@@ -1,0 +1,22 @@
+Collecting gradio==5.32.0
+  Downloading gradio-5.32.0-py3-none-any.whl.metadata (16 kB)
+Collecting click==8.2.1
+  Downloading click-8.2.1-py3-none-any.whl.metadata (2.5 kB)
+Collecting pydantic
+  Using cached pydantic-2.11.5-py3-none-any.whl.metadata (67 kB)
+Collecting gradio_client==0.15.0
+  Downloading gradio_client-0.15.0-py3-none-any.whl.metadata (7.1 kB)
+Requirement already satisfied: aiofiles<25.0,>=22.0 in /m/home/home0/01/shenj4/unix/miniconda3/envs/live_speech_310/lib/python3.10/site-packages (from gradio==5.32.0) (24.1.0)
+Requirement already satisfied: anyio<5.0,>=3.0 in /m/home/home0/01/shenj4/unix/.local/lib/python3.10/site-packages (from gradio==5.32.0) (4.6.2.post1)
+Requirement already satisfied: fastapi<1.0,>=0.115.2 in /m/home/home0/01/shenj4/unix/miniconda3/envs/live_speech_310/lib/python3.10/site-packages (from gradio==5.32.0) (0.115.12)
+Requirement already satisfied: ffmpy in /m/home/home0/01/shenj4/unix/miniconda3/envs/live_speech_310/lib/python3.10/site-packages (from gradio==5.32.0) (0.6.0)
+INFO: pip is looking at multiple versions of gradio to determine which version is compatible with other requirements. This could take a while.
+
+The conflict is caused by:
+    The user requested gradio_client==0.15.0
+    gradio 5.32.0 depends on gradio-client==1.10.2
+
+To fix this you could try to:
+1. loosen the range of package versions you've specified
+2. remove package versions to allow pip to attempt to solve the dependency conflict
+
