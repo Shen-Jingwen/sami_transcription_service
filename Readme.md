@@ -8,9 +8,9 @@ speaker diarization, transcript display, editing, and saving.
 ## Service Link
 http://195.148.21.110:7860/
 
-![Frontend screenshot](./readme/frontend.png)
+![Frontend screenshot](./readme/overview.png)
 
-Key features:
+## Key features
 
 - Offline speaker-attributed transcription with word-level timestamp alignment and audio-text highlighting.
 - Users can switch between different ASR models and diarization models at runtime.  
@@ -25,12 +25,12 @@ Key features:
   The frontend (app.py) shows ASR output first for early feedback, then replaces it with the speaker-attributed transcript once diarization finishes (few seconds/mins depends on audio length).
 		
 
-- Long audio is processed in chunks by the ASR pipeline - 100s chunks with 5s overlap. (custom_asr.py)
+- Long audio is processed in chunks by the ASR pipeline - 100s chunks with 5s overlap. (custom_asr.py)  
   Handled by HuggingFace ASR pipeline — the pipeline merges chunk results with proper stride handling and returns the final transcription as a whole. Chunking happens entirely inside the pipeline for long-audio ASR processing. It does not change how results are returned; the pipeline does not output chunk by chunk.
 	
 
-- Optional incremental ASR output mode, with a WER trade-off warning. (app.py)
-  This only affects how ASR results are segmented and streamed to the frontend.   
+- Optional incremental ASR output mode, with a WER trade-off warning. (app.py)  
+  This only affects how ASR results are segmented and streamed to the frontend.  
   The HuggingFace ASR pipeline does not natively support chunk-by-chunk output, so in this mode the audio is manually split into chunks and each chunk is transcribed separately. Overlap between chunks is handled in code, which slightly increases WER.
 	  
 - Transcript editing: edit text, re-align with forced alignment, and save the result. (app.py)
