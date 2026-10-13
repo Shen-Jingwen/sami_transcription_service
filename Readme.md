@@ -9,8 +9,13 @@ speaker diarization, transcript display, editing, and saving.
 http://xxx.xxx.xxx.xxx:7860/
 (check float ip on CSC instances)
 
-
 ![Frontend screenshot](./readme/overview.png)
+
+### Usage tips
+- ASR-only transcription can be run first; diarization can be enabled afterwards to add speaker labels, avoiding the wait for diarization during the initial transcription.
+- Alternatively, ASR and diarization can be enabled together. The frontend still shows the ASR output first for early feedback, then updates with speaker labels once diarization finishes; the user waits for speaker labels (seconds to minutes, depending on audio length).
+- For long audio, both ASR and diarization take longer. "Incremental ASR output" can be enabled to stream the ASR result to the frontend, but this increases WER; if not enabled, the full result must be waited for.
+
 
 ## Key features
 
@@ -47,11 +52,6 @@ http://xxx.xxx.xxx.xxx:7860/
 - Model switch: reloads the selected ASR or diarization model and re-generates the transcript. (seconds to minutes, depending on audio length).
   ASR model switch: reloads the ASR model and re-runs ASR on the current audio.  
   Diarization model switch: reloads the diarization model and re-runs diarization on the cached ASR result (ASR is not re-run).  
-
-### Usage tips
-- ASR-only transcription can be run first; diarization can be enabled afterwards to add speaker labels, avoiding the wait for diarization during the initial transcription.
-- Alternatively, ASR and diarization can be enabled together. The frontend still shows the ASR output first for early feedback, then updates with speaker labels once diarization finishes; the user waits for speaker labels (seconds to minutes, depending on audio length).
-- For long audio, both ASR and diarization take longer. "Incremental ASR output" can be enabled to stream the ASR result to the frontend chunk by chunk, but this increases WER; if not enabled, the full result must be waited for.
 
 
 ### Pending / WIP
