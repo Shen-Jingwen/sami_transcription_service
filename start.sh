@@ -35,9 +35,9 @@ if [ "$1" = "--daemon" ]; then
     NEW_PID=$!
     sleep 3
     if kill -0 $NEW_PID 2>/dev/null; then
-        echo "launched service (PID $NEW_PID). Check logs in log.txt"
+        echo "launched service (PID $NEW_PID). Check logs in log.txt: tail -f log.txt"
     else
-        echo "ERROR: service failed to start. Check log.txt"
+        echo "ERROR: service failed to start. Check log.txt: tail -f log.txt"
         tail -20 log.txt
         exit 1
     fi

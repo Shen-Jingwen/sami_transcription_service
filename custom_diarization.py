@@ -114,23 +114,44 @@ class SpeakerDiarizer:
         if not audio_path or not os.path.exists(audio_path):
             print(f"[Diarizer] Audio not found: {audio_path}")
             return []
-
+            
+        torch.cuda.init() 
         pipe = self.load()
         sess = self._clean_session_name(session_name or os.path.splitext(os.path.basename(audio_path))[0])
 
-        try:
-            # DiariZen 返回多个值，第一个是 diarization 结果
-            result = pipe(audio_path, sess_name=sess)
-            diar_results = result[0] if isinstance(result, tuple) else result
-        except torch.cuda.OutOfMemoryError:
-            print("[Diarizer] CUDA OOM, retry on CPU")
-            self.to("cpu")
-            result = self.pipeline(audio_path, sess_name=sess)
-            diar_results = result[0] if isinstance(result, tuple) else result
-        except Exception as e:
-            print(f"[Diarizer] diarize failed: {e}")
-            return []
+        batch_sizes = [16, 8, 4, 2, 1]
+        diar_results = None
+        for bs in batch_sizes:
+            # 清理显存
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                torch.cuda.ipc_collect()
+            gc.collect()
 
+            # 设 batch_size
+            if hasattr(pipe, "embedding_batch_size"):
+                pipe.embedding_batch_size = bs
+            if hasattr(pipe, "segmentation_batch_size"):
+                pipe.segmentation_batch_size = bs
+
+            print(f"[Diarizer] Trying batch_size={bs}")
+            
+            try:
+                # DiariZen 返回多个值，第一个是 diarization 结果
+                result = pipe(audio_path, sess_name=sess)
+                diar_results = result[0] if isinstance(result, tuple) else result
+                print(f"[Diarizer] Success at batch_size={bs}")
+                break
+            except torch.cuda.OutOfMemoryError:
+                print(f"[Diarizer] OOM at batch_size={bs}, retry smaller")
+                continue
+            except Exception as e:
+                print(f"[Diarizer] diarize failed: {e}")
+                return [] 
+        
+        if diar_results is None:
+            print("[Diarizer] All batch sizes failed")
+            return []
         raw_turns: List[SpeakerTurn] = []
         for turn, _, speaker in diar_results.itertracks(yield_label=True):
             raw_turns.append(SpeakerTurn(

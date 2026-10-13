@@ -5,8 +5,10 @@ Implemented a Northern Sami speech transcription service with speaker diarizatio
 Frontend built with Gradio Blocks, provides audio upload, ASR model selection,
 speaker diarization, transcript display, editing, and saving.
 
-## Service Link
-http://195.148.21.110:7860/
+## Service Link 
+http://xxx.xxx.xxx.xxx:7860/
+(check float ip on CSC instances)
+
 
 ![Frontend screenshot](./readme/overview.png)
 

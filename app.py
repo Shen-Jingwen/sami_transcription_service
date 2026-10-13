@@ -141,6 +141,8 @@ def retranscribe_on_model_change(model_name, audio_input_value, mode, enable_dia
         elif asr.diarizer.model_name != diar_model:
             asr.diarizer.unload()
             asr.diarizer.model_name = diar_model
+            asr.diarizer.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+            asr.diarizer.load()
         asr.use_diarization = True
     else:
         asr.use_diarization = False
@@ -303,8 +305,8 @@ def offline_audio_handler(audio_file, enable_diarization, diar_model, incrementa
         if asr.diarizer is None:
             asr.diarizer = SpeakerDiarizer(model_name=diar_model)
         elif asr.diarizer.model_name != diar_model:
+            asr.diarizer.unload()
             asr.diarizer.model_name = diar_model
-            asr.diarizer.pipeline = None
             asr.diarizer.load()
         asr.use_diarization = True
     else:
@@ -356,8 +358,8 @@ def rediarize_with_cache(audio_file, enable_diarization, diar_model, cache, prev
     if asr.diarizer is None:
         asr.diarizer = SpeakerDiarizer(model_name=diar_model)
     elif asr.diarizer.model_name != diar_model:
+        asr.diarizer.unload()
         asr.diarizer.model_name = diar_model
-        asr.diarizer.pipeline = None
         asr.diarizer.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         asr.diarizer.load()
         
