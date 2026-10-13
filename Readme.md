@@ -24,8 +24,8 @@ http://xxx.xxx.xxx.xxx:7860/
   5. The final speaker-attributed transcript is assembled as `*start-end* speaker: transcription`. (custom_diarization.py)  
 
   ASR and diarization are logically independent but executed sequentially in the code (ASR → forced alignment → diarization → merge), because both models need GPU memory and cannot run in parallel on a single GPU.  
-  The frontend (app.py) shows ASR output first for early feedback, then replaces it with the speaker-attributed transcript once diarization finishes (few seconds/mins depends on audio length).
-		
+  The frontend (app.py) shows ASR output first for early feedback, then replaces it with the speaker-attributed transcript once diarization finishes.
+  The user must wait for diarization to complete before seeing speaker labels; the wait depends on audio length (seconds to minutes depends on audio length)  
 
 - Long audio is processed in chunks by the ASR pipeline - 100s chunks with 5s overlap. (custom_asr.py)  
   Handled by HuggingFace ASR pipeline — the pipeline merges chunk results with proper stride handling and returns the final transcription as a whole. Chunking happens entirely inside the pipeline for long-audio ASR processing. It does not change how results are returned; the pipeline does not output chunk by chunk.
@@ -36,7 +36,23 @@ http://xxx.xxx.xxx.xxx:7860/
   The HuggingFace ASR pipeline does not natively support chunk-by-chunk output, so in this mode the audio is manually split into chunks and each chunk is transcribed separately. Overlap between chunks is handled in code, which slightly increases WER.
 	  
 - Transcript editing: edit text, re-align with forced alignment, and save the result. (app.py)
+  On save, the edited text is re-aligned with the audio via CTC forced alignment so the word-level timestamps match the new text. This takes a few seconds.  
+  The `saved_transcript` file is updated automatically after saving.  
 
+- Audio-text highlighting during playback: while the audio plays, the word being spoken is highlighted in the transcript. (utils/audio_transcript_utils.py, app.py)
+
+
+### Delays
+- Diarization: runs after ASR, user waits for speaker labels. (seconds to minutes, depending on audio length).
+- Editing: CTC forced alignment re-runs on save. (a few seconds)
+- Model switch: reloads the selected ASR or diarization model and re-generates the transcript. (seconds to minutes, depending on audio length).
+  ASR model switch: reloads the ASR model and re-runs ASR on the current audio.  
+  Diarization model switch: reloads the diarization model and re-runs diarization on the cached ASR result (ASR is not re-run).  
+
+### Pending / WIP
+- Punctuation restoration (`utils/punctuation_restorer.py`) is not integrated — the transcript currently has no punctuation.
+- Double-click a word to jump the audio is WIP: The click event is captured — open F12 → Console and double-click a word, you will see `double clicked: <word>`. The audio-jump part is not yet implemented. To check backend logs: `tail -f log.txt` 
+- `utils/` can be extended with more post-processing utilities.
 
 ## Working Directory
 /sami_transcription_service
